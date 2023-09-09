@@ -10,30 +10,44 @@ function App() {
   const mouse2Cheeses = useRef([]);
 
   const handleDrop = (mouseId, cheeseId) => {
-    if (mouseId === "mouse1") {
+    if (mouseId === "mouse1" && !mouse1Cheeses.current.includes(cheeseId)) {
       mouse1Cheeses.current.push(cheeseId);
-    } else if (mouseId === "mouse2") {
+    } else if (mouseId === "mouse2" && !mouse2Cheeses.current.includes(cheeseId)) {
       mouse2Cheeses.current.push(cheeseId);
     }
 
-    if (
-      mouse1Cheeses.current.length >= 2 &&
-      mouse2Cheeses.current.length >= 2
-    ) {
-      checkSolution();
+    checkSolution();
+  };
+
+  const handleUndo = (mouseId, cheeseId) => {
+    if (mouseId === "mouse1") {
+      const index = mouse1Cheeses.current.indexOf(cheeseId);
+      if (index > -1) mouse1Cheeses.current.splice(index, 1);
+    } else if (mouseId === "mouse2") {
+      const index = mouse2Cheeses.current.indexOf(cheeseId);
+      if (index > -1) mouse2Cheeses.current.splice(index, 1);
     }
+
+    setFeedback("");
   };
 
   const checkSolution = () => {
-    if (
-      mouse1Cheeses.current.includes("cheese1") &&
-      mouse2Cheeses.current.includes("cheese2") &&
-      mouse1Cheeses.current.includes("cheese3") &&
-      mouse2Cheeses.current.includes("cheese3")
-    ) {
+    const mouse1Set = new Set(mouse1Cheeses.current);
+    const mouse2Set = new Set(mouse2Cheeses.current);
+
+    if (mouse1Set.size !== 2 || mouse2Set.size !== 2) return;
+
+    const sharedCheese = [...mouse1Set].find(cheese => mouse2Set.has(cheese));
+
+    if (!sharedCheese) return;
+
+    mouse1Set.delete(sharedCheese);
+    mouse2Set.delete(sharedCheese);
+
+    if ([...mouse1Set][0] !== [...mouse2Set][0]) {
       setFeedback("Correct!");
     } else {
-      // setFeedback('Try again.');
+      setFeedback("Try again.");
     }
   };
 
@@ -63,8 +77,8 @@ function App() {
         </p>
       </div>
       <div className="mice-container">
-        <Mouse id="mouse1" onDrop={handleDrop} reset={reset} />
-        <Mouse id="mouse2" onDrop={handleDrop} reset={reset} />
+        <Mouse id="mouse1" onDrop={handleDrop} onUndo={handleUndo} reset={reset} />
+        <Mouse id="mouse2" onDrop={handleDrop} onUndo={handleUndo} reset={reset} />
       </div>
       <div className="cheeses-container">
         <div

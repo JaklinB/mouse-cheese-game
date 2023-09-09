@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-function Mouse({ id, onDrop, reset }) {
+function Mouse({ id, onDrop, onUndo, reset }) {
   const [cheeses, setCheeses] = useState([]);
 
   useEffect(() => {
@@ -19,10 +19,15 @@ function Mouse({ id, onDrop, reset }) {
     }
   };
 
-  const handleUndo = (index) => {
+  const handleUndoAction = (index) => {
+    const removedCheese = cheeses[index];
     const updatedCheeses = [...cheeses];
     updatedCheeses.splice(index, 1);
     setCheeses(updatedCheeses);
+
+    if (typeof onUndo === "function") {
+      onUndo(id, removedCheese);
+    }
   };
 
   return (
@@ -37,7 +42,7 @@ function Mouse({ id, onDrop, reset }) {
           <div
             key={idx}
             className="small-cheese"
-            onClick={() => handleUndo(idx)}
+            onClick={() => handleUndoAction(idx)}
           ></div>
         ))}
       </div>
