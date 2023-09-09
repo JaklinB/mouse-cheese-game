@@ -81,7 +81,6 @@ body {
 .small-cheeses-container {
   display: flex;
   flex-wrap: wrap-reverse;
-  justify-content: flex-end;
   width: 70%;
   position: absolute;
   top: -50px;
