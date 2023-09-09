@@ -48,7 +48,7 @@ function App() {
   return (
     <div className="app">
       <div className="instructions">
-        <h3>Instructions</h3>
+        <h3>💡 Instructions</h3>
         <p>
           You have two mice and four pieces of cheese. One of the pieces of
           cheese is poisoned, but you don't know which one. The mice can eat a
@@ -93,7 +93,7 @@ function App() {
         ></div>
       </div>
       <p className="feedback">{feedback}</p>
-      <button onClick={handleReset}>Reset</button>
+      <button onClick={handleReset}>Reset ↻</button>
     </div>
   );
 }
