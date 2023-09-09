@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
+import CustomAlert from "./CustomAlert";
 
-function Mouse({ id, onDrop, onUndo, reset }) {
+function Mouse({ id, onDrop, reset, existingCheeses }) {
   const [cheeses, setCheeses] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
   useEffect(() => {
     if (reset) {
@@ -12,22 +15,20 @@ function Mouse({ id, onDrop, onUndo, reset }) {
   const handleDropEvent = (e) => {
     e.preventDefault();
     const cheeseId = e.dataTransfer.getData("text/plain");
-    if (cheeses.length < 2) {
+    if (!cheeses.includes(cheeseId)) {
       const updatedCheeses = [...cheeses, cheeseId];
       setCheeses(updatedCheeses);
       onDrop(id, cheeseId);
+    } else {
+      setAlertMessage("You've already given this cheese to this mouse!");
+      setShowAlert(true);
     }
   };
 
-  const handleUndoAction = (index) => {
-    const removedCheese = cheeses[index];
+  const handleUndo = (index) => {
     const updatedCheeses = [...cheeses];
     updatedCheeses.splice(index, 1);
     setCheeses(updatedCheeses);
-
-    if (typeof onUndo === "function") {
-      onUndo(id, removedCheese);
-    }
   };
 
   return (
@@ -42,10 +43,16 @@ function Mouse({ id, onDrop, onUndo, reset }) {
           <div
             key={idx}
             className="small-cheese"
-            onClick={() => handleUndoAction(idx)}
+            onClick={() => handleUndo(idx)}
           ></div>
         ))}
       </div>
+      {showAlert && (
+        <CustomAlert 
+          message={alertMessage} 
+          onClose={() => setShowAlert(false)}
+        />
+      )}
     </div>
   );
 }
