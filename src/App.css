@@ -79,13 +79,13 @@ body {
 }
 
 .small-cheeses-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  justify-content: center;
+  display: flex;
+  flex-wrap: wrap-reverse;
+  justify-content: flex-end;
   width: 70%;
   position: absolute;
   top: -50px;
-  align-content: flex-end;
+  height: 40px;
 }
 
 .cheeses-container {
