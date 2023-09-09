@@ -79,12 +79,21 @@ body {
 }
 
 .small-cheeses-container {
-  display: flex;
-  flex-wrap: wrap-reverse;
-  width: 70%;
-  position: absolute;
+  display: grid;
+  grid-template-columns: repeat(2, 20px);
+  grid-auto-rows: 20px;
+  gap: 1px 2px;
+  position: relative;
   top: -50px;
-  height: 40px;
+  width: 65px;
+}
+
+.small-cheese.hidden {
+  visibility: hidden;
+}
+
+.small-cheese.visible {
+  visibility: visible;
 }
 
 .cheeses-container {

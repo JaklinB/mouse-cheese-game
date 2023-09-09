@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CustomAlert from "./CustomAlert";
 
-function Mouse({ id, onDrop, reset, existingCheeses }) {
+function Mouse({ id, onDrop, onUndo, reset }) {
   const [cheeses, setCheeses] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -25,10 +25,11 @@ function Mouse({ id, onDrop, reset, existingCheeses }) {
     }
   };
 
-  const handleUndo = (index) => {
-    const updatedCheeses = [...cheeses];
-    updatedCheeses.splice(index, 1);
+  const handleUndoEvent = (e) => {
+    const cheeseId = e.target.getAttribute("data-cheese-id");
+    const updatedCheeses = cheeses.filter((c) => c !== cheeseId);
     setCheeses(updatedCheeses);
+    onUndo(id, cheeseId);
   };
 
   return (
@@ -39,17 +40,20 @@ function Mouse({ id, onDrop, reset, existingCheeses }) {
       onDragOver={(e) => e.preventDefault()}
     >
       <div className="small-cheeses-container">
-        {cheeses.map((cheeseId, idx) => (
+        {["cheese1", "cheese2", "cheese3", "cheese4"].map((cheeseId) => (
           <div
-            key={idx}
-            className="small-cheese"
-            onClick={() => handleUndo(idx)}
+            key={cheeseId}
+            className={`small-cheese ${
+              cheeses.includes(cheeseId) ? "visible" : "hidden"
+            }`}
+            data-cheese-id={cheeseId}
+            onClick={handleUndoEvent}
           ></div>
         ))}
       </div>
       {showAlert && (
-        <CustomAlert 
-          message={alertMessage} 
+        <CustomAlert
+          message={alertMessage}
           onClose={() => setShowAlert(false)}
         />
       )}

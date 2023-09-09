@@ -29,6 +29,7 @@ function App() {
     }
 
     setFeedback("");
+    checkSolution();
   };
 
   const checkSolution = () => {
@@ -37,7 +38,7 @@ function App() {
 
     if (mouse1Set.size !== 2 || mouse2Set.size !== 2) return;
 
-    const sharedCheese = [...mouse1Set].find(cheese => mouse2Set.has(cheese));
+    const sharedCheese = [...mouse1Set].find((cheese) => mouse2Set.has(cheese));
 
     if (!sharedCheese) return;
 
@@ -77,8 +78,18 @@ function App() {
         </p>
       </div>
       <div className="mice-container">
-        <Mouse id="mouse1" onDrop={handleDrop} onUndo={handleUndo} reset={reset} />
-        <Mouse id="mouse2" onDrop={handleDrop} onUndo={handleUndo} reset={reset} />
+        <Mouse
+          id="mouse1"
+          onDrop={handleDrop}
+          onUndo={handleUndo}
+          reset={reset}
+        />
+        <Mouse
+          id="mouse2"
+          onDrop={handleDrop}
+          onUndo={handleUndo}
+          reset={reset}
+        />
       </div>
       <div className="cheeses-container">
         <div
