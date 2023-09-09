@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function Mouse({ id, onDrop }) {
+function Mouse({ id, onDrop, reset }) {
     const [cheeses, setCheeses] = useState([]);
 
     const handleDropEvent = (e) => {
@@ -13,6 +13,16 @@ function Mouse({ id, onDrop }) {
         }
     };
 
+    const handleUndo = (index) => {
+        const updatedCheeses = [...cheeses];
+        updatedCheeses.splice(index, 1);
+        setCheeses(updatedCheeses);
+    };
+
+    if (reset) {
+        setCheeses([]);
+    }
+
     return (
         <div 
             id={id} 
@@ -22,7 +32,7 @@ function Mouse({ id, onDrop }) {
         >
             <div className="small-cheeses-container">
                 {cheeses.map((cheeseId, idx) => (
-                    <div key={idx} className="small-cheese"></div>
+                    <div key={idx} className="small-cheese" onClick={() => handleUndo(idx)}></div>
                 ))}
             </div>
         </div>
