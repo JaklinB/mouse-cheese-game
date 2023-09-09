@@ -45,8 +45,8 @@ body {
   margin-bottom: 10px;
 }
 
-
-.mouse, .cheese {
+.mouse,
+.cheese {
   width: 80px;
   height: 80px;
   margin: 10px;
@@ -55,8 +55,9 @@ body {
 }
 
 .mouse {
-  background-image: url('../assets/mouse.png');
-  background-size: cover;
+  background-image: url("../assets/mouse.png");
+  background-size: contain;
+  background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -64,14 +65,15 @@ body {
 }
 
 .cheese {
-  background-image: url('../assets/cheese.png');
-  background-size: cover;
+  background-image: url("../assets/cheese.png");
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 .small-cheese {
   width: 20px;
   height: 20px;
-  background-image: url('../assets/cheese.png');
+  background-image: url("../assets/cheese.png");
   background-size: cover;
   margin: 15px 5px;
 }
@@ -101,7 +103,7 @@ body {
 button {
   margin-top: 20px;
   padding: 10px 20px;
-  background-color: #007BFF;
+  background-color: #007bff;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -114,15 +116,16 @@ button:hover {
 }
 
 @media (max-width: 480px) {
-  .mouse, .cheese {
-      width: 60px;
-      height: 60px;
+  .mouse,
+  .cheese {
+    width: 60px;
+    height: 60px;
   }
 
   .small-cheese {
-      width: 30px;
-      height: 30px;
-      top: -40px;
-      left: 15px;
+    width: 30px;
+    height: 30px;
+    top: -40px;
+    left: 15px;
   }
 }
