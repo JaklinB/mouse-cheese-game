@@ -44,6 +44,15 @@ function App() {
 
   return (
     <div className="app">
+      <div className="instructions">
+        <h2>Instructions</h2>
+        <p>
+          You have two mice and four pieces of cheese. One of the pieces of cheese is poisoned, but you don't know which one. The mice can eat a small amount of the cheese, and within 24 hours, if the cheese was poisoned, the mouse will die. If the cheese wasn't poisoned, the mouse will be perfectly fine.
+        </p>
+        <p>
+          Your goal is to determine which piece of cheese is poisoned, but you only have 24 hours. How can you be certain which piece of cheese is poisoned without risking both mice dying?
+        </p>
+      </div>
       <div className="mice-container">
         <Mouse id="mouse1" onDrop={handleDrop} reset={reset} />
         <Mouse id="mouse2" onDrop={handleDrop} reset={reset} />
