@@ -1,11 +1,11 @@
 import React from "react";
 
-function CustomAlert({ message, onClose }) {
+function CustomAlert({ message, buttonAlertMessage, onClose }) {
   return (
     <div className="custom-alert-overlay">
       <div className="custom-alert-content">
         <p>{message}</p>
-        <button onClick={onClose}>Close</button>
+        <button onClick={onClose}>{buttonAlertMessage}</button>
       </div>
     </div>
   );

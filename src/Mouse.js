@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CustomAlert from "./CustomAlert";
 
-function Mouse({ id, onDrop, onUndo, reset }) {
+function Mouse({ id, onDrop, onUndo, reset, guessingPhase }) {
   const [cheeses, setCheeses] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -26,6 +26,7 @@ function Mouse({ id, onDrop, onUndo, reset }) {
   };
 
   const handleUndoEvent = (e) => {
+    if (guessingPhase) return;
     const cheeseId = e.target.getAttribute("data-cheese-id");
     const updatedCheeses = cheeses.filter((c) => c !== cheeseId);
     setCheeses(updatedCheeses);
@@ -54,6 +55,7 @@ function Mouse({ id, onDrop, onUndo, reset }) {
       {showAlert && (
         <CustomAlert
           message={alertMessage}
+          buttonAlertMessage={"Close"}
           onClose={() => setShowAlert(false)}
         />
       )}

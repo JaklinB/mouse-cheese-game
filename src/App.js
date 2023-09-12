@@ -1,25 +1,80 @@
 import React, { useState, useRef } from "react";
 import Mouse from "./Mouse";
 import "./App.css";
+import CustomAlert from "./CustomAlert";
 
 function App() {
   const [feedback, setFeedback] = useState("");
   const [reset, setReset] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [deadMouse, setDeadMouse] = useState(null);
+  const [guessingPhase, setGuessingPhase] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   const mouse1Cheeses = useRef([]);
   const mouse2Cheeses = useRef([]);
 
+  const determineDeadMouse = () => {
+    const randomNum = Math.random();
+    if (randomNum < 0.25) return "mouse1";
+    if (randomNum < 0.5) return "mouse2";
+    if (randomNum < 0.75) return "both";
+    return "none";
+  };
+
+  const handleWait = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setDeadMouse(determineDeadMouse());
+      setGuessingPhase(true);
+    }, 4000);
+  };
+
+  const handleCheeseGuess = (cheeseId) => {
+    let poisonedCheese;
+    if (deadMouse === "mouse1")
+      poisonedCheese = mouse1Cheeses.current.find(
+        (c) => !mouse2Cheeses.current.includes(c)
+      );
+    else if (deadMouse === "mouse2")
+      poisonedCheese = mouse2Cheeses.current.find(
+        (c) => !mouse1Cheeses.current.includes(c)
+      );
+    else if (deadMouse === "both")
+      poisonedCheese = mouse1Cheeses.current.find((c) =>
+        mouse2Cheeses.current.includes(c)
+      );
+    else
+      poisonedCheese = ["cheese1", "cheese2", "cheese3", "cheese4"].find(
+        (c) =>
+          !mouse1Cheeses.current.includes(c) &&
+          !mouse2Cheeses.current.includes(c)
+      );
+
+    if (cheeseId === poisonedCheese)
+      setFeedback("Correct! That's the poisoned cheese.");
+    else setFeedback("Incorrect. Try again.");
+  };
+
   const handleDrop = (mouseId, cheeseId) => {
+    if (guessingPhase) return;
+
     if (mouseId === "mouse1" && !mouse1Cheeses.current.includes(cheeseId)) {
       mouse1Cheeses.current.push(cheeseId);
-    } else if (mouseId === "mouse2" && !mouse2Cheeses.current.includes(cheeseId)) {
+    } else if (
+      mouseId === "mouse2" &&
+      !mouse2Cheeses.current.includes(cheeseId)
+    ) {
       mouse2Cheeses.current.push(cheeseId);
     }
-
     checkSolution();
   };
 
   const handleUndo = (mouseId, cheeseId) => {
+    if (guessingPhase) return;
+
     if (mouseId === "mouse1") {
       const index = mouse1Cheeses.current.indexOf(cheeseId);
       if (index > -1) mouse1Cheeses.current.splice(index, 1);
@@ -27,7 +82,6 @@ function App() {
       const index = mouse2Cheeses.current.indexOf(cheeseId);
       if (index > -1) mouse2Cheeses.current.splice(index, 1);
     }
-
     setFeedback("");
     checkSolution();
   };
@@ -46,7 +100,9 @@ function App() {
     mouse2Set.delete(sharedCheese);
 
     if ([...mouse1Set][0] !== [...mouse2Set][0]) {
-      setFeedback("Correct!");
+      setAlertMessage("Correct! Now let's wait for the poison to take effect!");
+      setShowAlert(true);
+      handleWait();
     } else {
       setFeedback("Try again.");
     }
@@ -58,6 +114,10 @@ function App() {
     setTimeout(() => setReset(false), 10);
     mouse1Cheeses.current = [];
     mouse2Cheeses.current = [];
+    setDeadMouse(null);
+    setGuessingPhase(false);
+    setLoading(false);
+    setShowAlert(false);
   };
 
   return (
@@ -74,7 +134,7 @@ function App() {
         <p>
           Your goal is to determine which piece of cheese is poisoned, but you
           only have 24 hours. How can you be certain which piece of cheese is
-          poisoned without risking both mice dying?
+          poisoned?
         </p>
       </div>
       <div className="mice-container">
@@ -83,42 +143,56 @@ function App() {
           onDrop={handleDrop}
           onUndo={handleUndo}
           reset={reset}
+          guessingPhase={guessingPhase}
         />
         <Mouse
           id="mouse2"
           onDrop={handleDrop}
           onUndo={handleUndo}
           reset={reset}
+          guessingPhase={guessingPhase}
         />
       </div>
+      {deadMouse && (
+        <div className="dead-mouse-status">
+          <span role="img" aria-label="skull">
+            💀
+          </span>
+          {deadMouse === "mouse1"
+            ? " Mouse 1 is dead."
+            : deadMouse === "mouse2"
+            ? " Mouse 2 is dead."
+            : deadMouse === "both"
+            ? " Both mice are dead."
+            : " None of the mice died."}
+        </div>
+      )}
       <div className="cheeses-container">
-        <div
-          id="cheese1"
-          className="cheese"
-          draggable="true"
-          onDragStart={(e) => e.dataTransfer.setData("text/plain", "cheese1")}
-        ></div>
-        <div
-          id="cheese2"
-          className="cheese"
-          draggable="true"
-          onDragStart={(e) => e.dataTransfer.setData("text/plain", "cheese2")}
-        ></div>
-        <div
-          id="cheese3"
-          className="cheese"
-          draggable="true"
-          onDragStart={(e) => e.dataTransfer.setData("text/plain", "cheese3")}
-        ></div>
-        <div
-          id="cheese4"
-          className="cheese"
-          draggable="true"
-          onDragStart={(e) => e.dataTransfer.setData("text/plain", "cheese4")}
-        ></div>
+        {["cheese1", "cheese2", "cheese3", "cheese4"].map((cheeseId) => (
+          <div
+            key={cheeseId}
+            id={cheeseId}
+            className="cheese"
+            draggable={!guessingPhase}
+            onDragStart={(e) => e.dataTransfer.setData("text/plain", cheeseId)}
+            onClick={guessingPhase ? () => handleCheeseGuess(cheeseId) : null}
+          ></div>
+        ))}
       </div>
-      <p className="feedback">{feedback}</p>
+      <p className={feedback ? "feedback active" : "feedback"}>{feedback}</p>
       <button onClick={handleReset}>Reset ↻</button>
+      {showAlert && (
+        <CustomAlert
+          message={alertMessage}
+          buttonAlertMessage={"Wait ⏱️"}
+          onClose={() => setShowAlert(false)}
+        />
+      )}
+      {loading && (
+        <div className="loading-overlay">
+          <div className="loading-indicator">Time is passing by ... ⏳</div>
+        </div>
+      )}
     </div>
   );
 }
